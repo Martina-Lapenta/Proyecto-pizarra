@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.canvas-container {
+    background-color: rgb(18, 107, 37);
+    margin: 20px auto;
+    border: 2px solid #000;
+}
+
+canvas {
+    border: 1px solid #ccc;
+}
+
+.controls {
+    margin-top: 10px;
+}
+
+button, input {
+    font-size: 16px;
+    padding: 5px 10px;
+    margin: 0 5px;
+}
