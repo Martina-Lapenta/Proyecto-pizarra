@@ -9,10 +9,36 @@ socket.addEventListener ("open", () => {
 socket.addEventListener ("message", (event) => {//esto es un escuchador de eventos 
     const Data = JSON.parse(event.data);
     console.log ("Recive un mesaje de ws", Data);
+    
     const PlayerContainer = document.getElementById ("players");
-    const player = document.createElement("li");
+    /*const player = document.createElement("li");
     player.innerHTML = Data.Playername;
-    PlayerContainer.appendChild (player);
+    PlayerContainer.appendChild (player);*/
+    if (Data.tipo === 'dibujo') {
+        if (Data.datos.clear) {
+            clearCanvas();
+        } else {
+            ctx.strokeStyle = Data.datos.color;
+            ctx.lineTo(Data.datos.x, Data.datos.y);
+            ctx.stroke();
+        }
+    }
+    if (Data.Playername) {
+        const player = document.createElement("li");
+        player.innerHTML = Data.Playername;
+        PlayerContainer.appendChild(player);
+    }
+
+    if (Data.tipo === 'jugadores') {
+        const PlayerContainer = document.getElementById("players");
+        PlayerContainer.innerHTML = ''; // Limpiar la lista actual
+
+        Data.jugadores.forEach((nombreJugador) => {
+            const player = document.createElement("li");
+            player.innerHTML = nombreJugador;
+            PlayerContainer.appendChild(player);
+        });
+    }
 }
 );
 
@@ -22,13 +48,16 @@ JoinButton.addEventListener ("click", () => {
     console.log ("Esta funfionando el click");
     const PlayerName = document.getElementById ("player-name").value ;
     socket.send (JSON.stringify({"Playername": PlayerName}));
+
+    // Añade esta línea para enviar el mensaje con el tipo 'nombreJugador'
+    socket.send(JSON.stringify({ tipo: 'nombreJugador', Playername: PlayerName }));
 });
 
 //Agregar un lienzo al HTML 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const clearButton = document.getElementById('clear-button');
-const colorPicker = document.getElementById('color-picker');
+const pencilButton = document.getElementById('pencilButton');
 
 let drawing = false;
 
@@ -38,7 +67,7 @@ canvas.height = 400;
 ctx.lineWidth = 5;
 ctx.lineJoin = 'round';
 ctx.lineCap = 'round';
-ctx.strokeStyle = colorPicker.value;
+
 
 
 function startDrawing(e) {
@@ -51,6 +80,17 @@ function draw(e) {
     if (!drawing) return;
     ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
     ctx.stroke();
+    const datosDibujo = {
+        x: e.clientX - canvas.offsetLeft,
+        y: e.clientY - canvas.offsetTop,
+        color: ctx.strokeStyle
+    };
+    enviarDibujo(datosDibujo);
+}
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    enviarDibujo({ clear: true });
 }
 
 function stopDrawing() {
@@ -58,8 +98,10 @@ function stopDrawing() {
     ctx.closePath();
 }
 
-function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+function enviarDibujo(datosDibujo) {
+    const mensaje = JSON.stringify({ tipo: 'dibujo', datos: datosDibujo });
+    socket.send(mensaje);
 }
 
 canvas.addEventListener('mousedown', startDrawing);
@@ -68,15 +110,12 @@ canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing);
 
 clearButton.addEventListener('click', clearCanvas);
-colorPicker.addEventListener('input', (e) => {
-    ctx.strokeStyle = e.target.value;
+
+
+
+pencilButton.addEventListener('click', () => {
+    ctx.strokeStyle = '#000000'; // Establece el color del trazo a negro
 });
-
-/*function enviarDibujo(datosDibujo) {
-    const mensaje = JSON.stringify({ tipo: 'dibujo', datos: datosDibujo });
-    ws.send(mensaje);
-}*/
-
 
 // Agrega un manejador de eventos al botón "jugar"
 const jugarButton = document.getElementById("jugar-button");
