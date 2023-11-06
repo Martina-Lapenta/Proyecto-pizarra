@@ -39,6 +39,12 @@ socket.addEventListener ("message", (event) => {//esto es un escuchador de event
             PlayerContainer.appendChild(player);
         });
     }
+    if (Data.tipo === 'cambiarColor') {
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        context.fillStyle = Data.color;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+    }
 }
 );
 
@@ -56,19 +62,25 @@ JoinButton.addEventListener ("click", () => {
 //Agregar un lienzo al HTML 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const clearButton = document.getElementById('clear-button');
-const pencilButton = document.getElementById('pencilButton');
 
-let drawing = false;
 
-canvas.width = window.innerWidth - 40;
-canvas.height = 400;
+function cambiarDimensiones(ancho, alto) {
+    canvas.width = ancho;
+    canvas.height = alto;
+}
+
+// Llamar a la función para cambiar las dimensiones del lienzo
+cambiarDimensiones(1600, 600);
+/*canvas.width = window.innerWidth - 20;
+canvas.height = 400;*/
 
 ctx.lineWidth = 5;
 ctx.lineJoin = 'round';
 ctx.lineCap = 'round';
 
 
+const pencilButton = document.getElementById('pencilButton');
+let drawing = false;
 
 function startDrawing(e) {
     drawing = true;
@@ -87,29 +99,46 @@ function draw(e) {
     };
     enviarDibujo(datosDibujo);
 }
-
-function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    enviarDibujo({ clear: true });
-}
-
 function stopDrawing() {
     drawing = false;
     ctx.closePath();
 }
 
 
+
+const colorButton = document.getElementById('color-button');
+
+colorButton.addEventListener('click', changeCanvasColor);
+
+function changeCanvasColor() {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    context.fillStyle = 'white'; // Cambia 'tu_color_preferido' al color que desees
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Envía el mensaje a todos los clientes para mantener sincronizado el color
+    const mensaje = JSON.stringify({ tipo: 'cambiarColor', color: 'white' });
+    socket.send(mensaje);
+}
+
+
+
+
+
 function enviarDibujo(datosDibujo) {
+    console.log("Enviando dibujo:", datosDibujo); // Agrega este log
     const mensaje = JSON.stringify({ tipo: 'dibujo', datos: datosDibujo });
     socket.send(mensaje);
 }
+      
+
 
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing);
 
-clearButton.addEventListener('click', clearCanvas);
+
 
 
 

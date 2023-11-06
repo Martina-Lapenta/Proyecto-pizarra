@@ -3,21 +3,37 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background-color: #ca9cda;
 }
 
 .canvas-container {
-    background-color: rgb(239, 255, 243);
+    background-color: rgb(255, 255, 255);
     margin: 20px auto;
     border: 2px solid #000;
 }
 
 canvas {
-    border: 1px solid #ccc;
+    border: 1px solid #591ee2;
 }
 
 .controls {
-    margin-top: 10px;
+    position: absolute;
+    top: 30px; /* Ajusta según sea necesario */
+    left: 30px; /* Ajusta según sea necesario */
+    z-index: 1; /* Asegura que los controles estén por encima del lienzo */
+}
+
+#pencilButton {
+    position: absolute;
+    top: 200px; /* Ajusta según tu preferencia */
+    left: 1200px; /* Ajusta según tu preferencia */
+}
+
+
+#color-button {
+    position: absolute;
+    top: 300px; /* Ajusta según tu preferencia */
+    left: 1200px; /* Ajusta según tu preferencia */
 }
 
 button, input {
@@ -25,3 +41,24 @@ button, input {
     padding: 5px 10px;
     margin: 0 5px;
 }
+
+
+#player-list {
+    position: absolute;
+    top: 50px; /* Ajusta según tu preferencia */
+    left: 50px; /* Ajusta según tu preferencia */
+}
+
+#jugar-button {
+    position: absolute;
+    top: 10px; /* Ajusta según tu preferencia */
+    left: 600px; /* Ajusta según tu preferencia */
+}
+
+#timer {
+    position: absolute;
+    top: 30px; /* Ajusta según tu preferencia */
+    left: 1100px; /* Ajusta según tu preferencia */
+}
+
+

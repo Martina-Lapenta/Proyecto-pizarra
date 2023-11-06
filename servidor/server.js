@@ -45,26 +45,19 @@ wss.on("connection", (ws) => {
                 }
             });
         }
+        if (data.tipo === 'cambiarColor') {
+            console.log("Mensaje de cambio de color recibido:", data.color);
+            // Reenvía el mensaje a todos los clientes conectados
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(data));
+                }
+            });
+        }
     });
+
 
     ws.on("close", (event) => {
         console.log("Se desconectó ", event);
     });
 });
-
-// ...
-
-
-//estructura de websocket
-/*wss.on ("connection",(ws)=>{
-    console.log ("Se conecto el ws con exito");
-    ws.on ("message", (message) => {
-        const data = JSON.parse(message);
-        console.log ("Mensaje recivido del front", data);
-        ws.send (JSON.stringify (data));
-    });
-    ws.on ("close", (event) => {
-        console.log ("Se desconecto ", event);
-    });
-
-});*/
